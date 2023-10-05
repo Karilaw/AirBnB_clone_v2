@@ -3,59 +3,28 @@
 This script generates a .tgz archive from the
 contents of the web_static folder
 """
-from fabric import Connection, Config
+
+
+from fabric.api import local
 from datetime import datetime
-import os
 
-
-class Fabfile(object):
+def do_pack():
     """
-    A class used to represent a Fabric file
-
-    ...
-
-    Attributes
-    ----------
-    conn : Connection
-        a Fabric Connection object that represents a shell session
-
-    Methods
-    -------
-    do_pack()
-        Generates a .tgz archive from the contents of the web_static folder
+    Generates a .tgz archive from the contents of the web_static folder
     """
 
-    def __init__(self, connection):
-        """
-        Parameters
-        ----------
-        connection : Connection
-            a Fabric Connection object that represents a shell session
-        """
+    # Create the versions directory if it doesn't exist
+    local("mkdir -p versions")
 
-        self.conn = connection
+    # Create a timestamped filename
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    filename = "versions/web_static_{}.tgz".format(timestamp)
 
-    def do_pack(self):
-        """
-        Generates a .tgz archive from the contents of the web_static folder
-        Returns
-        -------
-        str
-            a string which is the path of the .tgz file if successful
-        """
+    # Use the tar command to create a tar gzipped archive
+    result = local("tar -cvzf {} web_static".format(filename))
 
-        # Create the versions directory if it doesn't exist
-        self.conn.local("mkdir -p versions")
-
-        # Create a timestamped filename
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        filename = "versions/web_static_{}.tgz".format(timestamp)
-
-        # Use the tar command to create a tar gzipped archive
-        result = self.conn.local("tar -cvzf {} web_static".format(filename))
-
-        # If the command was successful, return none
-        if result.ok:
-            return filename
-        else:
-            return None
+    # If the command was successful, return the name of the file
+    if result.succeeded:
+        return filename
+    else:
+        return None
