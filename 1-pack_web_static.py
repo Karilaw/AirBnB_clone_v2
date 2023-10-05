@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 """
 This script generates a .tgz archive from the
 contents of the web_static folder
@@ -41,7 +41,7 @@ class Fabfile(object):
         Returns
         -------
         str
-            a string which is the path of the .tgz file if successful, otherwise None
+            a string which is the path of the .tgz file if successful
         """
 
         # Create the versions directory if it doesn't exist
@@ -51,10 +51,10 @@ class Fabfile(object):
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         filename = "versions/web_static_{}.tgz".format(timestamp)
 
-        # Use the tar command to create a tar gzipped archive of the web_static directory
+        # Use the tar command to create a tar gzipped archive
         result = self.conn.local("tar -cvzf {} web_static".format(filename))
 
-        # If the command was successful, return the name of the file. Otherwise, return None.
+        # If the command was successful, return none
         if result.ok:
             return filename
         else:
